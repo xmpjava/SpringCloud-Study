@@ -1,0 +1,36 @@
+# 插入文档
+POST /heima/_doc/1
+{
+  "info": "黑马程序员Java讲师",
+  "email": "zy@itcast.cn",
+  "name": {
+    "firstName": "赵",
+    "lastName": "云"
+  }
+}
+
+# 查看文档
+GET /heima/_doc/1
+
+# 删除文档
+DELETE /heima/_doc/1
+
+# 修改文档
+# 方式一,全量修改是覆盖原来的文档，其本质是:
+#                         根据指定的id删除文档,新增一个相同id的文档
+PUT /heima/_doc/1
+{
+  "info": "黑马程序员Java讲师---方式一全量修改",
+  "email": "zy@itcast.cn",
+  "name": {
+    "firstName": "赵",
+    "lastName": "云"
+  }
+}
+# 方式二,增量修改是只修改指定id匹配的文档中的部分字段。
+POST /heima/_update/1
+{
+  "doc": {
+    "email": "ZY@itcast.cn"
+  }
+}
