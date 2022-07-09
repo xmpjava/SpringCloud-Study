@@ -1,0 +1,213 @@
+
+# ===================DSL查询分类===================
+
+# 查询所有 --》没有查询条件
+GET /hotel/_search
+{
+  "query": {
+    "match_all": {
+    }
+  }
+}
+
+######全文检索查询#######
+
+# math查询  --》单字段查询
+GET /hotel/_search
+{
+  "query": {
+    "match": {
+      "all": "外滩"
+    }
+  }
+}
+
+# multi_match查询 --》多字段查询，任意一个字段符合条件就算符合查询条件
+GET /hotel/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "外滩",
+      "fields": ["brand","name"]
+    }
+  }
+}
+
+######精准查询#######
+
+# term查询: 根据词条精确值查询
+GET /hotel/_search
+{
+  "query": {
+    "term": {
+      "city": {
+        "value": "上海"
+      }
+    }
+  }
+}
+
+#range查询: 根据值的范围查询
+GET /hotel/_search
+{
+  "query": {
+    "range": {
+      "price": {
+        "gte": 1000,
+        "lte": 3000
+      }
+    }
+  }
+}
+
+########地理坐标查询#######
+
+# geo_distance 查询
+
+GET /hotel/_search
+{
+  "query":{
+    "geo_distance": {
+      "distance": "1km",
+      "location": "31.21,121.5" 
+    }
+  }
+}
+
+########复合查询##########
+
+# function score 查询 --》算分函数查询
+GET /hotel/_search
+{
+  "query": {
+    "function_score": {
+      "query": {
+        "match": {
+        "all": "外滩"
+      }
+      },
+      "functions": [
+        {
+          "filter": {
+            "term": {
+              "brand": "如家"
+            }
+          },
+          "weight": 10
+        }
+      ],
+      "boost_mode": "sum"
+    }
+  }
+}
+
+# 布尔查询
+GET /hotel/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "name": "如家"
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "range": {
+            "price": {
+              "gt": 400
+            }
+          }
+        }
+      ],
+      "filter": [
+        {
+          "geo_distance": {
+            "distance": "10km",
+            "location": {
+              "lat": 31.21,
+              "lon": 121.5
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+#########搜索结果处理###########
+
+# sort 排序
+#         先按得分降序，再按价格升序
+GET /hotel/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "sort": [
+    {
+      "score": "desc"
+    },
+    {
+      "price": "asc"
+    }
+  ]
+}
+
+#假设我的位置是：31.034661，121.612282，寻找我周围距离最近的酒店。
+GET /hotel/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "sort": [
+    {
+      "_geo_distance": {
+        "location": {
+          "lat": 31.034661,
+          "lon": 121.612282
+        },
+        "order": "asc"
+        , "unit": "km"
+      }
+    }
+  ]
+}
+
+
+########分页#########
+
+# 分页查询
+GET /hotel/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "sort": [
+    {
+      "price":"asc"
+    }
+  ],
+  "from": 20,
+  "size":10
+}
+
+#########高亮查询##########
+
+GET /hotel/_search
+{
+  "query": {
+    "match": {
+      "all": "如家"
+    }
+  },
+  "highlight": {
+    "fields": {
+      "name": {
+        "require_field_match": "false"
+      }
+    }
+  }
+}

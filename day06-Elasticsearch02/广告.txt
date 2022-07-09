@@ -1,0 +1,24 @@
+POST /hotel/_update/1902197537
+{
+    "doc": {
+        "isAD": true
+    }
+}
+POST /hotel/_update/2056126831
+{
+    "doc": {
+        "isAD": true
+    }
+}
+POST /hotel/_update/1989806195
+{
+    "doc": {
+        "isAD": true
+    }
+}
+POST /hotel/_update/2056105938
+{
+    "doc": {
+        "isAD": true
+    }
+}
